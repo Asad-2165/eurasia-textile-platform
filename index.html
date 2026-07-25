@@ -1,0 +1,1061 @@
+
+import zipfile
+import os
+
+# Создаем структуру проекта
+project_dir = "/mnt/agents/output/eurasia-textile-platform"
+os.makedirs(project_dir, exist_ok=True)
+os.makedirs(f"{project_dir}/assets", exist_ok=True)
+os.makedirs(f"{project_dir}/assets/images", exist_ok=True)
+os.makedirs(f"{project_dir}/css", exist_ok=True)
+os.makedirs(f"{project_dir}/js", exist_ok=True)
+os.makedirs(f"{project_dir}/mobile-app", exist_ok=True)
+
+# Создаем файлы проекта
+
+# index.html
+index_html = '''<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eurasia Textile — Цифровой текстильный альянс</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+</head>
+<body>
+    <!-- Курсор-логотип -->
+    <div id="custom-cursor">
+        <svg viewBox="0 0 60 60" class="cursor-logo">
+            <defs>
+                <linearGradient id="cursorGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#1a5c3a"/>
+                    <stop offset="100%" style="stop-color:#2d8a5e"/>
+                </linearGradient>
+            </defs>
+            <path class="cursor-path" d="M30 5 L35 20 L50 20 L38 30 L43 45 L30 35 L17 45 L22 30 L10 20 L25 20 Z" fill="url(#cursorGrad)" opacity="0.9"/>
+            <circle cx="30" cy="30" r="26" fill="none" stroke="url(#cursorGrad)" stroke-width="1.5" opacity="0.4"/>
+            <path d="M30 5 L30 55 M5 30 L55 30" stroke="url(#cursorGrad)" stroke-width="0.5" opacity="0.2"/>
+        </svg>
+    </div>
+
+    <!-- Навигация -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-brand">
+            <svg class="brand-logo" viewBox="0 0 50 50">
+                <defs>
+                    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#1a5c3a"/>
+                        <stop offset="100%" style="stop-color:#2d8a5e"/>
+                    </linearGradient>
+                </defs>
+                <path d="M25 3 L30 18 L45 18 L33 27 L38 42 L25 32 L12 42 L17 27 L5 18 L20 18 Z" fill="url(#brandGrad)"/>
+                <circle cx="25" cy="25" r="22" fill="none" stroke="url(#brandGrad)" stroke-width="1.5"/>
+            </svg>
+            <span class="brand-text">Eurasia<span class="brand-accent">Textile</span></span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#hero" class="nav-link active">Главная</a></li>
+            <li><a href="#about" class="nav-link">О проекте</a></li>
+            <li><a href="#market" class="nav-link">Рынок</a></li>
+            <li><a href="#tech" class="nav-link">Технологии</a></li>
+            <li><a href="#swot" class="nav-link">SWOT</a></li>
+            <li><a href="#roadmap" class="nav-link">Дорожная карта</a></li>
+            <li><a href="#economics" class="nav-link">Экономика</a></li>
+            <li><a href="#map" class="nav-link">Карта</a></li>
+            <li><a href="#risks" class="nav-link">Риски</a></li>
+        </ul>
+        <div class="nav-actions">
+            <button class="btn btn-outline" onclick="showModal('login')">Войти</button>
+            <button class="btn btn-primary" onclick="showModal('register')">Регистрация</button>
+        </div>
+        <button class="mobile-toggle" id="mobileToggle">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+        <div class="hero-bg">
+            <div class="hero-particles" id="particles"></div>
+            <div class="hero-gradient"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                <span>Цифровой текстильный альянс РФ — Узбекистан</span>
+            </div>
+            <h1 class="hero-title">
+                <span class="title-line">Совместное производство</span>
+                <span class="title-line accent">с полным трекингом</span>
+                <span class="title-line">для мирового рынка</span>
+            </h1>
+            <p class="hero-subtitle">
+                Единая цифровая экосистема, объединяющая узбекский хлопок, 
+                российские технологии и совместный бренд Eurasia Textile для экспорта на рынки ЕАЭС, СНГ и ЕС
+            </p>
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <span class="stat-number" data-target="100">0</span>
+                    <span class="stat-unit">млн $</span>
+                    <span class="stat-label">Инвестиции</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" data-target="850">0</span>
+                    <span class="stat-unit">млн $</span>
+                    <span class="stat-label">Выручка к 2030</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" data-target="40">0</span>
+                    <span class="stat-unit">+</span>
+                    <span class="stat-label">Предприятий</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" data-target="5000">0</span>
+                    <span class="stat-unit">+</span>
+                    <span class="stat-label">Рабочих мест</span>
+                </div>
+            </div>
+            <div class="hero-cta">
+                <button class="btn btn-primary btn-lg" onclick="scrollToSection('about')">
+                    <span>Изучить проект</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                    </svg>
+                </button>
+                <button class="btn btn-outline btn-lg" onclick="showModal('demo')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5 3 19 12 5 21 5 3"/>
+                    </svg>
+                    <span>Демо платформы</span>
+                </button>
+            </div>
+        </div>
+        <div class="hero-scroll">
+            <div class="scroll-indicator">
+                <span>Прокрутите вниз</span>
+                <div class="scroll-arrow"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section about">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Актуальность и значимость</span>
+                <h2 class="section-title">Почему этот проект важен <span class="accent">прямо сейчас</span></h2>
+            </div>
+            <div class="about-grid">
+                <div class="about-card" data-aos="fade-up">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M24 4L4 14v20l20 10 20-10V14L24 4z"/>
+                            <path d="M4 14l20 10 20-10"/>
+                            <path d="M24 24v20"/>
+                        </svg>
+                    </div>
+                    <h3>Глобальный контекст</h3>
+                    <ul class="card-list">
+                        <li>Товарооборот РФ и Узбекистана вырос на <strong>12,4%</strong> в 2025 году</li>
+                        <li>Россия — <strong>2-й торговый партнёр</strong> (16,6% внешнеторгового оборота)</li>
+                        <li>Узбекистан нацелен на экспорт текстиля <strong>$4,0 млрд</strong> к 2026 году</li>
+                    </ul>
+                </div>
+                <div class="about-card" data-aos="fade-up" data-delay="100">
+                    <div class="card-icon icon-warning">
+                        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M24 4L4 44h40L24 4z"/>
+                            <path d="M24 20v12"/>
+                            <circle cx="24" cy="40" r="2"/>
+                        </svg>
+                    </div>
+                    <h3>Проблемы, требующие решения</h3>
+                    <ul class="card-list">
+                        <li>Узбекистан зависит от импортных технологий (<strong>60% оборудования</strong>)</li>
+                        <li>Россия теряет позиции в лёгкой промышленности</li>
+                        <li>Конкуренция Китая (19,2%) и Турции (3,9%)</li>
+                        <li>Логистические издержки через Казахстан: <strong>+12-15%</strong></li>
+                    </ul>
+                </div>
+                <div class="about-card about-solution" data-aos="fade-up" data-delay="200">
+                    <div class="card-icon icon-success">
+                        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M24 4C12 4 4 12 4 24s8 20 20 20 20-8 20-20S36 4 24 4z"/>
+                            <path d="M16 24l6 6 10-10"/>
+                        </svg>
+                    </div>
+                    <h3>Наше решение</h3>
+                    <p class="solution-text">
+                        Создание единой цифровой экосистемы, объединяющей узбекский хлопок, 
+                        российские технологии и совместный бренд для экспорта на рынки ЕАЭС и ЕС
+                    </p>
+                    <div class="solution-highlight">
+                        <span class="highlight-icon">🎯</span>
+                        <span>Прозрачная, технологичная и экологичная цепочка с полным трекингом</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Таблица показателей -->
+            <div class="metrics-table-wrapper" data-aos="fade-up">
+                <h3 class="table-title">Ключевые показатели проекта</h3>
+                <div class="metrics-table">
+                    <div class="table-header">
+                        <div class="th">Показатель</div>
+                        <div class="th">2024</div>
+                        <div class="th">2025</div>
+                        <div class="th">Цель 2026</div>
+                    </div>
+                    <div class="table-row">
+                        <div class="td">Экспорт текстиля Узб.</div>
+                        <div class="td">$2,2 млрд</div>
+                        <div class="td">$2,6 млрд</div>
+                        <div class="td highlight">$4,0 млрд</div>
+                    </div>
+                    <div class="table-row">
+                        <div class="td">Товарооборот РФ-Узб.</div>
+                        <div class="td">$8,5 млрд</div>
+                        <div class="td">$9,6 млрд</div>
+                        <div class="td highlight">$12 млрд</div>
+                    </div>
+                    <div class="table-row">
+                        <div class="td">Занятые в отрасли</div>
+                        <div class="td">580 тыс.</div>
+                        <div class="td">623 тыс.</div>
+                        <div class="td highlight">650 тыс.</div>
+                    </div>
+                    <div class="table-row">
+                        <div class="td">Экспортёры</div>
+                        <div class="td">907</div>
+                        <div class="td">1409</div>
+                        <div class="td highlight">1600+</div>
+                    </div>
+                    <div class="table-row">
+                        <div class="td">Доля готовой продукции</div>
+                        <div class="td">40%</div>
+                        <div class="td">44,6%</div>
+                        <div class="td highlight">55%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Market Analysis -->
+    <section id="market" class="section market">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Анализ рынка</span>
+                <h2 class="section-title">Структура и <span class="accent">динамика</span></h2>
+            </div>
+            <div class="market-grid">
+                <div class="market-chart-card" data-aos="fade-right">
+                    <h3>Структура экспорта Узбекистана (янв-мар 2025)</h3>
+                    <div class="chart-container">
+                        <canvas id="exportStructureChart"></canvas>
+                    </div>
+                    <div class="export-total">Общий объём: <strong>$629,3 млн</strong></div>
+                </div>
+                <div class="market-chart-card" data-aos="fade-left">
+                    <h3>Динамика товарооборота РФ — Узбекистан</h3>
+                    <div class="chart-container">
+                        <canvas id="tradeDynamicChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="market-insights" data-aos="fade-up">
+                <div class="insight-card">
+                    <div class="insight-icon">📦</div>
+                    <p>Российский импорт в Узбекистан (янв 2025): текстильная пряжа, ткани, готовые изделия — <strong>$46,7 млн</strong></p>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon">🚚</div>
+                    <p>Россия поставляет: синтетические волокна, химические вещества, оборудование для текстильных фабрик, шерстяные изделия, подошвы для обуви</p>
+                </div>
+                <div class="insight-card highlight">
+                    <div class="insight-icon">📈</div>
+                    <p><strong>Ключевой тренд:</strong> рост доли готовой продукции в экспорте Узбекистана с 40% до 44,6% за год — страна движется вверх по цепочке добавленной стоимости</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Competition & Barriers -->
+    <section id="competition" class="section competition">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Конкурентная среда</span>
+                <h2 class="section-title">Барьеры <span class="accent">входа</span></h2>
+            </div>
+            <div class="competition-grid">
+                <div class="competition-chart" data-aos="fade-right">
+                    <h3>Доля стран во внешнеторговом обороте Узбекистана (2025)</h3>
+                    <div class="chart-container">
+                        <canvas id="marketShareChart"></canvas>
+                    </div>
+                </div>
+                <div class="barriers-chart" data-aos="fade-left">
+                    <h3>Индекс барьеров для проекта</h3>
+                    <div class="barriers-list">
+                        <div class="barrier-item">
+                            <span class="barrier-name">Конкуренция Китая по цене</span>
+                            <div class="barrier-bar">
+                                <div class="barrier-fill critical" style="width: 95%"></div>
+                                <span class="barrier-value">9.5</span>
+                            </div>
+                        </div>
+                        <div class="barrier-item">
+                            <span class="barrier-name">Технологическая зависимость</span>
+                            <div class="barrier-bar">
+                                <div class="barrier-fill critical" style="width: 90%"></div>
+                                <span class="barrier-value">9.0</span>
+                            </div>
+                        </div>
+                        <div class="barrier-item">
+                            <span class="barrier-name">Высокая стоимость кредитов</span>
+                            <div class="barrier-bar">
+                                <div class="barrier-fill high" style="width: 85%"></div>
+                                <span class="barrier-value">8.5</span>
+                            </div>
+                        </div>
+                        <div class="barrier-item">
+                            <span class="barrier-name">Нехватка квалифицированных кадров</span>
+                            <div class="barrier-bar">
+                                <div class="barrier-fill high" style="width: 78%"></div>
+                                <span class="barrier-value">7.8</span>
+                            </div>
+                        </div>
+                        <div class="barrier-item">
+                            <span class="barrier-name">Логистические транзитные издержки</span>
+                            <div class="barrier-bar">
+                                <div class="barrier-fill medium" style="width: 72%"></div>
+                                <span class="barrier-value">7.2</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="competition-notes" data-aos="fade-up">
+                <div class="note-card">
+                    <span class="note-flag">🇨🇳</span>
+                    <p><strong>Китай</strong> доминирует массовым сегментом за счёт дешевизны и масштаба</p>
+                </div>
+                <div class="note-card">
+                    <span class="note-flag">🇹🇷</span>
+                    <p><strong>Турция</strong> конкурирует в модном сегменте через близкую культуру</p>
+                </div>
+                <div class="note-card warning">
+                    <span class="note-icon">⚠️</span>
+                    <p>Транзит через Казахстан увеличивает сроки поставок на <strong>5-7 дней</strong> и стоимость на <strong>12-15%</strong> ($45-60 млн дополнительных издержек в год)</p>
+                </div>
+                <div class="note-card danger">
+                    <span class="note-icon">🔧</span>
+                    <p><strong>60%</strong> текстильного оборудования в Узбекистане требует импортного сервисного обслуживания — критическая уязвимость</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SWOT Analysis -->
+    <section id="swot" class="section swot">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Стратегический анализ</span>
+                <h2 class="section-title">SWOT-<span class="accent">анализ</span> проекта</h2>
+            </div>
+            <div class="swot-grid">
+                <div class="swot-card strengths" data-aos="fade-up">
+                    <div class="swot-header">
+                        <div class="swot-icon">💪</div>
+                        <h3>СИЛЫ <span>Strengths</span></h3>
+                    </div>
+                    <ul class="swot-list">
+                        <li>Комплементарность: хлопок Узбекистана + технологии РФ</li>
+                        <li>Господдержка обеих стран (указ Президента Узбекистана, программы Минпромторга РФ)</li>
+                        <li>Рост товарооборота +12,4% — тренд на усиление связей</li>
+                        <li>Цифровизация как конкурентное преимущество перед Китаем</li>
+                        <li>Опыт российских ERP и IoT-решений</li>
+                    </ul>
+                </div>
+                <div class="swot-card weaknesses" data-aos="fade-up" data-delay="100">
+                    <div class="swot-header">
+                        <div class="swot-icon">⚡</div>
+                        <h3>СЛАБОСТИ <span>Weaknesses</span></h3>
+                    </div>
+                    <ul class="swot-list">
+                        <li>Высокие первоначальные инвестиции ($100 млн)</li>
+                        <li>Зависимость от политической воли обеих стран</li>
+                        <li>Необходимость обучения 2000+ кадров с нуля</li>
+                        <li>Долгий срок окупаемости (3,2 года)</li>
+                        <li>Логистические риски транзитных маршрутов</li>
+                    </ul>
+                </div>
+                <div class="swot-card opportunities" data-aos="fade-up" data-delay="200">
+                    <div class="swot-header">
+                        <div class="swot-icon">🚀</div>
+                        <h3>ВОЗМОЖНОСТИ <span>Opportunities</span></h3>
+                    </div>
+                    <ul class="swot-list">
+                        <li>Выход на рынок ЕС через сертификацию Organic EU</li>
+                        <li>Рост спроса на экологичный текстиль в мире (+15% в год)</li>
+                        <li>Указ Президента Узбекистана о цифровизации 40 предприятий</li>
+                        <li>Создание единого бренда Eurasia Textile</li>
+                        <li>Трансфер модели в кожевенную и обувную промышленность</li>
+                    </ul>
+                </div>
+                <div class="swot-card threats" data-aos="fade-up" data-delay="300">
+                    <div class="swot-header">
+                        <div class="swot-icon">⚠️</div>
+                        <h3>УГРОЗЫ <span>Threats</span></h3>
+                    </div>
+                    <ul class="swot-list">
+                        <li>Девальвация национальных валют</li>
+                        <li>Усиление санкционного давления на РФ</li>
+                        <li>Вход новых игроков (Индия, Бангладеш)</li>
+                        <li>Изменение таможенных правил ЕАЭС</li>
+                        <li>Колебания цен на хлопок на мировом рынке</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Triple Spiral Concept -->
+    <section id="concept" class="section concept">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Инновационное решение</span>
+                <h2 class="section-title">Концепция <span class="accent">«Тройная спираль»</span></h2>
+            </div>
+            <div class="concept-diagram" data-aos="zoom-in">
+                <div class="concept-center">
+                    <div class="center-node">
+                        <span class="center-label">ЦИФРОВОЙ<br>ТЕКСТИЛЬНЫЙ<br>АЛЬЯНС</span>
+                    </div>
+                </div>
+                <div class="concept-nodes">
+                    <div class="concept-node tech-hub" data-aos="fade-right">
+                        <div class="node-circle">
+                            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M24 4v8M24 36v8M4 24h8M36 24h8"/>
+                                <circle cx="24" cy="24" r="8"/>
+                                <path d="M24 12l4-4M24 12l-4-4M24 36l4 4M24 36l-4 4"/>
+                            </svg>
+                        </div>
+                        <h4>ТЕХНОЛОГИЧЕСКИЙ ХАБ</h4>
+                        <ul>
+                            <li>СП в Фергане</li>
+                            <li>Российское оборудование</li>
+                            <li>Узбекский хлопок</li>
+                            <li>Трансфер технологий</li>
+                        </ul>
+                    </div>
+                    <div class="concept-node digital-platform" data-aos="fade-down">
+                        <div class="node-circle">
+                            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="8" y="8" width="32" height="24" rx="2"/>
+                                <path d="M16 32v4M32 32v4M12 36h24"/>
+                                <path d="M20 16l4 4 8-8"/>
+                            </svg>
+                        </div>
+                        <h4>ЦИФРОВАЯ ПЛАТФОРМА</h4>
+                        <ul>
+                            <li>TextileChain (блокчейн)</li>
+                            <li>AI-прогнозирование</li>
+                            <li>IoT-мониторинг</li>
+                            <li>Цифровые двойники</li>
+                        </ul>
+                    </div>
+                    <div class="concept-node brand" data-aos="fade-left">
+                        <div class="node-circle">
+                            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M24 4l20 10-20 10L4 14z"/>
+                                <path d="M4 24l20 10 20-10"/>
+                                <path d="M4 34l20 10 20-10"/>
+                            </svg>
+                        </div>
+                        <h4>БРЕНД Eurasia Textile</h4>
+                        <ul>
+                            <li>Рынки ЕАЭС, СНГ, ЕС</li>
+                            <li>Сертификация Better Work</li>
+                            <li>Organic EU</li>
+                            <li>Премиум-сегмент</li>
+                        </ul>
+                    </div>
+                </div>
+                <svg class="concept-connections" viewBox="0 0 800 500">
+                    <defs>
+                        <linearGradient id="lineGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#c9a84c"/>
+                            <stop offset="100%" style="stop-color:#1a3a5c"/>
+                        </linearGradient>
+                        <linearGradient id="lineGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#2d8a5e"/>
+                            <stop offset="100%" style="stop-color:#1a3a5c"/>
+                        </linearGradient>
+                        <linearGradient id="lineGrad3" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#1a3a5c"/>
+                            <stop offset="100%" style="stop-color:#c41e3a"/>
+                        </linearGradient>
+                    </defs>
+                    <path class="connection-line" d="M200 150 Q400 200 400 250" stroke="url(#lineGrad1)" fill="none" stroke-width="2" stroke-dasharray="8,4"/>
+                    <path class="connection-line" d="M400 100 Q400 175 400 250" stroke="url(#lineGrad2)" fill="none" stroke-width="2" stroke-dasharray="8,4"/>
+                    <path class="connection-line" d="M600 150 Q400 200 400 250" stroke="url(#lineGrad3)" fill="none" stroke-width="2" stroke-dasharray="8,4"/>
+                    <path class="connection-line" d="M400 250 L400 350" stroke="#c41e3a" fill="none" stroke-width="2" stroke-dasharray="8,4"/>
+                </svg>
+            </div>
+            <div class="concept-features" data-aos="fade-up">
+                <div class="feature-item">
+                    <span class="feature-badge">Уникальность</span>
+                    <p>В отличие от китайских массовых поставок, проект создаёт прозрачную, технологичную и экологичную цепочку с полным трекингом</p>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-badge">Масштабируемость</span>
+                    <p>Связанность с другими направлениями: трансфер модели в кожевенную промышленность, обувное производство, швейное оборудование</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technology Section -->
+    <section id="tech" class="section tech">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Технологическая архитектура</span>
+                <h2 class="section-title">Цифровые <span class="accent">инструменты</span></h2>
+            </div>
+            <div class="tech-grid">
+                <div class="tech-card" data-aos="fade-up">
+                    <div class="tech-icon">
+                        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="8" y="8" width="32" height="32" rx="4"/>
+                            <path d="M16 24h16M24 16v16"/>
+                            <circle cx="24" cy="24" r="4"/>
+                        </svg>
+                    </div>
+                    <h3>Блокчейн-трекинг (TextileChain)</h3>
+                    <ul>
+                        <li>Каждый этап от хлопка до продажи записан в неизменяемом реестре</li>
+                        <li>QR-код на изделии показывает всю историю для европейского покупателя</li>
+                    </ul>
+                </div>
+                <div class="tech-card" data-aos="fade-up" data-delay="100">
+                    <div class="tech-icon">
+                        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M24 4v6M24 38v6M4 24h6M38 24h6"/>
+                            <circle cx="24" cy="24" r="10"/>
+                            <path d="M24 18v6l4 4"/>
+                        </svg>
+                    </div>
+                    <h3>AI-модуль прогнозирования</h3>
+                    <ul>
+                        <li>Анализ 50+ рыночных индикаторов для прогноза спроса</li>
+                        <li>Снижение издержек на 15-20% за счёт точного планирования</li>
+                    </ul>
+                </div>
+                <div class="tech-card" data-aos="fade-up" data-delay="200">
+                    <div class="tech-icon">
+                        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 36V12a6 6 0 0112 0v24a6 6 0 01-12 0z"/>
+                            <path d="M24 36V20a6 6 0 0112 0v16a6 6 0 01-12 0z"/>
+                            <circle cx="18" cy="42" r="2" fill="currentColor"/>
+                            <circle cx="30" cy="42" r="2" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <h3>IoT-датчики на производстве</h3>
+                    <ul>
+                        <li>Мониторинг влажности, температуры, качества пряжи в реальном времени</li>
+                        <li>Автоматические уведомления при отклонении от нормы</li>
+                    </ul>
+                </div>
+                <div class="tech-card" data-aos="fade-up" data-delay="300">
+                    <div class="tech-icon">
+                        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="8" y="12" width="32" height="24" rx="2"/>
+                            <path d="M16 20h16M16 26h10"/>
+                            <circle cx="36" cy="18" r="2"/>
+                        </svg>
+                    </div>
+                    <h3>Цифровые двойники фабрик</h3>
+                    <ul>
+                        <li>Российские инженеры проводят удалённую диагностику оборудования</li>
+                        <li>Сокращение простоев на 30% и расходов на сервис</li>
+                    </ul>
+                </div>
+                <div class="tech-card" data-aos="fade-up" data-delay="400">
+                    <div class="tech-icon">
+                        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M8 12h32v24H8z"/>
+                            <path d="M8 20h32M16 12v24M32 12v24"/>
+                            <circle cx="24" cy="28" r="3"/>
+                        </svg>
+                    </div>
+                    <h3>ERP-система</h3>
+                    <ul>
+                        <li>Интеграция 40+ предприятий (соответствие указу Президента Узбекистана)</li>
+                        <li>Единое цифровое таможенное окно РФ — Узбекистан</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="value-model" data-aos="fade-up">
+                <h3>Модель добавленной стоимости (распределение доходов)</h3>
+                <div class="value-chart-container">
+                    <canvas id="valueModelChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roadmap Section -->
+    <section id="roadmap" class="section roadmap">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">План реализации</span>
+                <h2 class="section-title">Дорожная карта <span class="accent">2026-2029</span></h2>
+            </div>
+            <div class="roadmap-timeline" data-aos="fade-up">
+                <div class="timeline-line"></div>
+                <div class="timeline-items">
+                    <div class="timeline-item" data-phase="1">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <span class="phase-badge">Этап I</span>
+                            <h3>Подготовка</h3>
+                            <span class="phase-date">Q3-Q4 2026</span>
+                            <span class="phase-duration">2 мес</span>
+                            <p>Межправительственные соглашения, выбор площадки, регистрация СП</p>
+                            <div class="phase-budget">Бюджет: $2 млн</div>
+                            <div class="phase-result">Результат: Юридическое оформление</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item" data-phase="2">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <span class="phase-badge">Этап II</span>
+                            <h3>Инфраструктура</h3>
+                            <span class="phase-date">Q1-Q2 2027</span>
+                            <span class="phase-duration">3 мес</span>
+                            <p>Строительство технологического хаба, закупка оборудования</p>
+                            <div class="phase-budget">Бюджет: $45 млн</div>
+                            <div class="phase-result">Результат: Готовая производственная база</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item" data-phase="3">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <span class="phase-badge">Этап III</span>
+                            <h3>Запуск</h3>
+                            <span class="phase-date">Q3 2027</span>
+                            <span class="phase-duration">3 мес</span>
+                            <p>Пилотные линии, обучение 500 специалистов, тестирование ERP</p>
+                            <div class="phase-budget">Бюджет: $8 млн</div>
+                            <div class="phase-result">Результат: Первые партии продукции</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item" data-phase="4">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <span class="phase-badge">Этап IV</span>
+                            <h3>Масштабирование</h3>
+                            <span class="phase-date">2028</span>
+                            <span class="phase-duration">6 мес</span>
+                            <p>Подключение 40+ предприятий, запуск бренда Eurasia Textile</p>
+                            <div class="phase-budget">Бюджет: $20 млн</div>
+                            <div class="phase-result">Результат: Полная мощность: $320 млн выручки</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item" data-phase="5">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <span class="phase-badge">Этап V</span>
+                            <h3>Оптимизация</h3>
+                            <span class="phase-date">2029+</span>
+                            <span class="phase-duration">4 мес</span>
+                            <p>AI-аналитика, выход на рынки ЕС, сертификация Organic EU</p>
+                            <div class="phase-budget">Бюджет: $5 млн</div>
+                            <div class="phase-result">Результат: Устойчивый рост: $850 млн к 2030</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Economics Section -->
+    <section id="economics" class="section economics">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Экономическая модель</span>
+                <h2 class="section-title">Точные <span class="accent">расчёты</span></h2>
+            </div>
+            <div class="economics-grid">
+                <div class="economics-card" data-aos="fade-up">
+                    <h3>Финансовая динамика</h3>
+                    <div class="chart-container">
+                        <canvas id="financialChart"></canvas>
+                    </div>
+                </div>
+                <div class="economics-card" data-aos="fade-up" data-delay="100">
+                    <h3>Структура $100 млн инвестиций</h3>
+                    <div class="chart-container">
+                        <canvas id="investmentChart"></canvas>
+                    </div>
+                </div>
+                <div class="economics-card metrics-card" data-aos="fade-up" data-delay="200">
+                    <h3>Ключевые инвестиционные показатели</h3>
+                    <div class="metrics-grid">
+                        <div class="metric-item">
+                            <span class="metric-value">25%</span>
+                            <span class="metric-label">ROI (3 года)</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-value">22%</span>
+                            <span class="metric-label">IRR</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-value">$185 млн</span>
+                            <span class="metric-label">NPV (10%)</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-value">3.2 года</span>
+                            <span class="metric-label">Срок окупаемости</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="economics-details" data-aos="fade-up">
+                <div class="detail-block">
+                    <h4>📊 Расчёт эффективности</h4>
+                    <ul>
+                        <li>Чистая приведённая стоимость (NPV): <strong>$185 млн</strong> при ставке дисконтирования 10%</li>
+                        <li>Внутренняя норма доходности (IRR): <strong>22%</strong> — выше среднерыночной ставки</li>
+                        <li>Срок окупаемости: <strong>3,2 года</strong> (с учётом льготного налогообложения первые 2 года)</li>
+                        <li>К 2030 году проект генерирует <strong>$850 млн</strong> выручки при рентабельности 30%</li>
+                    </ul>
+                </div>
+                <div class="detail-block">
+                    <h4>🚀 Масштабирование</h4>
+                    <ul>
+                        <li>Каждый дополнительный завод в экосистеме требует <strong>$8-12 млн</strong> инвестиций и окупается за 2,5 года</li>
+                        <li>Франшизная модель для региональных производителей снижает риски и ускоряет рост</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Map Section -->
+    <section id="map" class="section map-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">География проекта</span>
+                <h2 class="section-title">Интерактивная <span class="accent">карта</span></h2>
+            </div>
+            <div class="map-wrapper" data-aos="fade-up">
+                <div id="map"></div>
+                <div class="map-legend">
+                    <div class="legend-item">
+                        <span class="legend-dot tech"></span>
+                        <span>Технологический хаб (Фергана)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot cotton"></span>
+                        <span>Зоны хлопководства</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot route"></span>
+                        <span>Логистические маршруты</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot market"></span>
+                        <span>Целевые рынки</span>
+                    </div>
+                </div>
+            </div>
+            <div class="map-stats" data-aos="fade-up">
+                <div class="map-stat">
+                    <span class="map-stat-value">5-7</span>
+                    <span class="map-stat-label">дней транзита через Казахстан</span>
+                </div>
+                <div class="map-stat">
+                    <span class="map-stat-value">12-15%</span>
+                    <span class="map-stat-label">дополнительные логистические издержки</span>
+                </div>
+                <div class="map-stat">
+                    <span class="map-stat-value">$45-60 млн</span>
+                    <span class="map-stat-label">дополнительных издержек в год</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Risk Management -->
+    <section id="risks" class="section risks">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Управление рисками</span>
+                <h2 class="section-title">Матрица и <span class="accent">стратегии</span></h2>
+            </div>
+            <div class="risks-grid">
+                <div class="risk-table-wrapper" data-aos="fade-right">
+                    <table class="risk-table">
+                        <thead>
+                            <tr>
+                                <th>Риск</th>
+                                <th>Вероятность</th>
+                                <th>Влияние</th>
+                                <th>Стратегия минимизации</th>
+                                <th>Резерв ($ млн)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="risk-critical">
+                                <td>Политические изменения</td>
+                                <td><span class="badge badge-medium">Средняя</span></td>
+                                <td><span class="badge badge-high">Высокое</span></td>
+                                <td>Многоуровневые соглашения ЕАЭС+СНГ</td>
+                                <td>$5</td>
+                            </tr>
+                            <tr class="risk-high">
+                                <td>Колебания курсов</td>
+                                <td><span class="badge badge-high">Высокая</span></td>
+                                <td><span class="badge badge-medium">Среднее</span></td>
+                                <td>Хеджирование, расчёты в рублях/юанях</td>
+                                <td>$3</td>
+                            </tr>
+                            <tr>
+                                <td>Технологические сбои</td>
+                                <td><span class="badge badge-low">Низкая</span></td>
+                                <td><span class="badge badge-medium">Среднее</span></td>
+                                <td>Резервные системы, российские инженеры</td>
+                                <td>$2</td>
+                            </tr>
+                            <tr class="risk-critical">
+                                <td>Конкуренция Китая</td>
+                                <td><span class="badge badge-high">Высокая</span></td>
+                                <td><span class="badge badge-high">Высокое</span></td>
+                                <td>Фокус на премиум и экологичность</td>
+                                <td>$4</td>
+                            </tr>
+                            <tr class="risk-high">
+                                <td>Задержки логистики</td>
+                                <td><span class="badge badge-medium">Средняя</span></td>
+                                <td><span class="badge badge-medium">Среднее</span></td>
+                                <td>Распределительные центры в Омске/Новосибирске</td>
+                                <td>$3</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="risk-matrix" data-aos="fade-left">
+                    <h3>Матрица рисков: вероятность × влияние</h3>
+                    <div class="matrix-chart">
+                        <canvas id="riskMatrixChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="risk-summary" data-aos="fade-up">
+                <div class="summary-card">
+                    <h4>💰 Общий резерв на риски</h4>
+                    <p><strong>$17 млн</strong> (17% от бюджета) — стандартная практика для инфраструктурных проектов такого масштаба</p>
+                </div>
+                <div class="summary-card">
+                    <h4>🛡️ Страхование</h4>
+                    <p>Полисы «АльфаСтрахование» и «Узбекинвест» на логистические и политические риски</p>
+                </div>
+                <div class="summary-card">
+                    <h4>🔄 Эскалация</h4>
+                    <p>При изменении геополитики — переключение на рынки СНГ и ЕАЭС без потери бизнес-модели</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results & KPI -->
+    <section id="results" class="section results">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Ожидаемые результаты</span>
+                <h2 class="section-title">KPI и <span class="accent">масштабирование</span></h2>
+            </div>
+            <div class="results-grid">
+                <div class="results-chart-card" data-aos="fade-right">
+                    <h3>Ключевые показатели эффективности</h3>
+                    <div class="chart-container">
+                        <canvas id="kpiChart"></canvas>
+                    </div>
+                </div>
+                <div class="results-chart-card" data-aos="fade-left">
+                    <h3>Дорожная карта масштабирования</h3>
+                    <div class="chart-container">
+                        <canvas id="scalingChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="results-categories" data-aos="fade-up">
+                <div class="result-category">
+                    <div class="category-icon">💰</div>
+                    <h4>Экономические</h4>
+                    <ul>
+                        <li>Экспорт текстиля Узбекистана до <strong>$4,0 млрд</strong> к 2028</li>
+                        <li>Доля российского сырья с 15% до <strong>35%</strong></li>
+                        <li>Экономия <strong>$45 млн/год</strong> на логистике</li>
+                    </ul>
+                </div>
+                <div class="result-category">
+                    <div class="category-icon">👥</div>
+                    <h4>Социальные</h4>
+                    <ul>
+                        <li><strong>5000+</strong> высококвалифицированных рабочих мест</li>
+                        <li>Обучение <strong>2000+</strong> специалистов</li>
+                        <li>Повышение средней зарплаты в отрасли на <strong>25%</strong></li>
+                    </ul>
+                </div>
+                <div class="result-category">
+                    <div class="category-icon">🔧</div>
+                    <h4>Технологические</h4>
+                    <ul>
+                        <li>ERP и AI на <strong>40 предприятиях</strong></li>
+                        <li><strong>502</strong> новых экспортёра</li>
+                        <li>Полная цифровая прослеживаемость цепочки поставок</li>
+                    </ul>
+                </div>
+                <div class="result-category">
+                    <div class="category-icon">🌍</div>
+                    <h4>Международные</h4>
+                    <ul>
+                        <li>Выход бренда Eurasia Textile на рынки <strong>ЕС и США</strong></li>
+                        <li>Сертификация <strong>Organic EU</strong> и <strong>Better Work</strong></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Expert Response Section -->
+    <section id="expert" class="section expert">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Ответ эксперту</span>
+                <h2 class="section-title">Комментарий <span class="accent">проанализирован</span></h2>
+            </div>
+            <div class="expert-comment-box" data-aos="fade-up">
+                <div class="expert-quote">
+                    <svg class="quote-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179z"/>
+                    </svg>
+                    <p>Совместное производство сделать хорошо, и бренд красивый. Но сможете ли Вы выйти на мировой рынок с этим брендом. Этот бренд не запатентирован-ли? Большой расход, отдачи не видно. Есть мелкие компании, которые изготавливают одежду дешево и качественно, и здесь есть большая конкуренция.</p>
+                </div>
+            </div>
+            <div class="expert-responses" data-aos="fade-up">
+                <div class="response-card">
+                    <div class="response-number">01</div>
+                    <h3>🌍 Выход на мировой рынок</h3>
+                    <p><strong>Стратегия:</strong> Мы не конкурируем с массовым сегментом Китая напрямую. Наш фокус — <strong>премиум-сегмент</strong> с полным трекингом через блокчейн TextileChain и сертификациями Organic EU + Better Work. Это создаёт уникальное ценностное предложение для европейского потребителя, готового платить за прозрачность.</p>
+                    <div class="response-proof">
+                        <span class="proof-badge">Доказательство</span>
+                        <p>Рост спроса на экологичный текстиль +15% в год. Наша целевая аудитория — не ценовой сегмент, а осознанное потребление.</p>
+                    </div>
+                </div>
+                <div class="response-card">
+                    <div class="response-number">02</div>
+                    <h3>📋 Патентование бренда</h3>
+                    <p><strong>Решение:</strong> Бренд Eurasia Textile будет зарегистрирован в <strong>ВОИС (WIPO)</strong> через систему Мадридского протокола с покрытием ЕАЭС, ЕС, США и ключевых азиатских рынков. Параллельно — регистрация товарного знака в Роспатенте и Агентстве интеллектуальной собственности Узбекистана.</p>
+                    <div class="response-proof">
+                        <span class="proof-badge">Гарантия</span>
+                        <p>$500K заложено в бюджет на юридическую защиту интеллектуальной собственности на этапе Подготовки (Q3-Q4 2026).</p>
+                    </div>
+                </div>
+                <div class="response-card">
+                    <div class="response-number">03</div>
+                    <h3>💰 Отдача от инвестиций</h3>
+                    <p><strong>Факты:</strong> NPV = <strong>$185 млн</strong> при ставке дисконтирования 10%, IRR = <strong>22%</strong> (выше среднерыночной), срок окупаемости <strong>3,2 года</strong>. К 2030 — $850 млн выручки при рентабельности 30%. Каждый дополнительный завод окупается за 2,5 года.</p>
+                    <div class="response-proof">
+                        <span class="proof-badge">Экономика</span>
+                        <p>Франшизная модель снижает риски: региональные производители инвестируют $8-12 млн, а не $100 млн.</p>
+                    </div>
+                </div>
+                <div class="response-card">
+                    <div class="response-number">04</div>
+                    <h3>🏭 Конкуренция с мелкими компаниями</h3>
+                    <p><strong>Преимущество:</strong> Мелкие компании не могут обеспечить <strong>цифровую прослеживаемость</strong>, сертификацию Organic EU, масштаб ERP на 40+ предприятиях и выход на рынки ЕС. Мы не конкурируем по цене — мы создаём новую категорию: «технологичный экотекстиль из Евразии».</p>
+                    <div class="response-proof">
+                        <span class="proof-badge">Конкуренция</span>
+                        <p>Индекс барьера «Конкуренция Китая по цене» = 9.5/10. Мы обходим ценовую конкуренцию через технологии и экологичность.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <svg class="footer-logo" viewBox="0 0 50 50">
+                        <defs>
+                            <linearGradient id="footerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#1a5c3a"/>
+                                <stop offset="100%" style="stop-color:#2d8a5e"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M25 3 L30 18 L45 18 L33 27 L38 42 L25 32 L12 42 L17 27 L5 18 L20 18 Z" fill="url(#footerGrad)"/>
+                    </svg>
+                    <h3>Eurasia<span class="accent">Textile</span></h3>
+                    <p>Цифровой текстильный альянс Россия — Узбекистан</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Платформа</h4>
+                    <a href="#about">О проекте</a>
+                    <a href="#tech">Технологии</a>
+                    <a href="#roadmap">Дорожная карта</a>
+                    <a href="#economics">Экономика</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Ресурсы</h4>
+                    <a href="#" onclick="showModal('docs')">Документация</a>
+                    <a href="#" onclick="showModal('api')">API</a>
+                    <a href="#" onclick="showModal('partners')">Партнёрам</a>
+                    <a href="#" onclick="showModal('careers')">Карьера</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Контакты</h4>
+                    <p>📧 info@eurasiatextile.com</p>
+                    <p>📱 +7 (999) 000-00-00</p>
+                    <p>📍 Москва / Ташкент / Фергана</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 Eurasia Textile. Все права защищены.</p>
+                <div class="footer-social">
+                    <a href="#" aria-label="Telegram">📱</a>
+                    <a href="#" aria-label="LinkedIn">💼</a>
+                    <a href="#" aria-label="GitHub">💻</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>'''
+
+with open(f"{project_dir}/index.html", "w", encoding="utf-8") as f:
+    f.write(index_html)
+
+print("index.html создан")
